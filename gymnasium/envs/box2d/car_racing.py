@@ -182,6 +182,7 @@ class CarRacing(gym.Env, EzPickle):
     ```
 
     ## Version History
+    - v2: Change truncation to termination when finishing the lap (1.0.0)
     - v1: Change track completion logic and add domain randomization (0.24.0)
     - v0: Original version
 
@@ -555,6 +556,7 @@ class CarRacing(gym.Env, EzPickle):
         step_reward = 0
         terminated = False
         truncated = False
+        info = {}
         if action is not None:  # First step without action, called from reset()
             self.reward -= 0.1
             # We actually don't want to count fuel spent, we want car to be faster.
@@ -563,18 +565,18 @@ class CarRacing(gym.Env, EzPickle):
             step_reward = self.reward - self.prev_reward
             self.prev_reward = self.reward
             if self.tile_visited_count == len(self.track) or self.new_lap:
-                # Truncation due to finishing lap
-                # This should not be treated as a failure
-                # but like a timeout
-                truncated = True
+                # Termination due to finishing lap
+                terminated = True
+                info["lap_finished"] = True
             x, y = self.car.hull.position
             if abs(x) > PLAYFIELD or abs(y) > PLAYFIELD:
                 terminated = True
+                info["lap_finished"] = False
                 step_reward = -100
 
         if self.render_mode == "human":
             self.render()
-        return self.state, step_reward, terminated, truncated, {}
+        return self.state, step_reward, terminated, truncated, info
 
     def render(self):
         if self.render_mode is None:
