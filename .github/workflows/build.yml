@@ -15,7 +15,7 @@ jobs:
           - python-version: '3.8'  # numpy>=2.0 requires Python>=3.9
             numpy-version: '>=2.0'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: |
           docker build -f bin/all-py.Dockerfile \
             --build-arg PYTHON_VERSION="${{ matrix.python-version }}" \
@@ -31,7 +31,7 @@ jobs:
     runs-on:
       ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: |
            docker build -f bin/necessary-py.Dockerfile \
              --build-arg PYTHON_VERSION='3.10' \
